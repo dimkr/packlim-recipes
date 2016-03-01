@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# this file is part of packlim-recipes.
+#
+# Copyright (c) 2016 Dima Krasner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+PKG_VER=2.2.6
+PKG_SRCS=http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-$PKG_VER.tar.gz
+PKG_DESC="An encryption and privacy library"
+#ca-certificates
+PKG_DEPS="musl zlib"
+
+build() {
+	autoreconf
+	[ $? -ne 0 ] && return 1
+
+	./configure --prefix=/$PFIX \
+	            --datarootdir=/$PFIX \
+	            --disable-shared \
+	            --enable-static
+	[ $? -ne 0 ] && return 1
+
+	$MAKE
+}
+
+package() {
+	$MAKE install
+	install -D -m 644 README.md $DESTDIR/$PFIX/doc/libressl/README.md
+	install -m 644 ChangeLog $DESTDIR/$PFIX/doc/libressl/ChangeLog
+	install -m 644 COPYING $DESTDIR/$PFIX/doc/libressl/COPYING
+}

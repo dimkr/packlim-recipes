@@ -1,0 +1,10 @@
+diff -rup musl-1.1.14-orig/tools/ld.musl-clang.in musl-1.1.14/tools/ld.musl-clang.in
+--- musl-1.1.14-orig/tools/ld.musl-clang.in	2016-02-23 19:23:56.440000223 +0200
++++ musl-1.1.14/tools/ld.musl-clang.in	2016-02-24 08:15:10.260001240 +0200
+@@ -48,4 +48,5 @@ for x ; do
+     esac
+ done
+ 
+-exec $($cc -print-prog-name=ld) -nostdlib "$@" -lc -dynamic-linker "$ldso"
++lgcc=$($cc -print-file-name=libgcc.a)
++exec $($cc -print-prog-name=ld) -nostdlib "$@" $lgcc -lc $lgcc -lc -dynamic-linker "$ldso"

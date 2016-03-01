@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# this file is part of packlim-recipes.
+#
+# Copyright (c) 2016 Dima Krasner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+PKG_VER=2.6.32.70
+PKG_SRCS=http://linux-libre.fsfla.org/pub/linux-libre/releases/$PKG_VER-gnu1/linux-libre-$PKG_VER-gnu1.tar.xz
+PKG_DESC="Kernel API headers"
+
+build() {
+	cd linux-$PKG_VER
+
+	$MAKE clean
+	$MAKE mrproper
+}
+
+package() {
+	local i
+
+	$MAKE INSTALL_HDR_PATH=$DESTDIR/$PFIX headers_install
+	find $DESTDIR/$PFIX/include -name .install -or -name ..install.cmd | xargs rm -f
+
+	install -D -m 644 README $DESTDIR/$PFIX/doc/linux-libre-headers/README
+	for i in COPYING CREDITS MAINTAINERS
+	do
+		install -m 644 $i $DESTDIR/$PFIX/doc/linux-libre-headers/$i
+	done
+}

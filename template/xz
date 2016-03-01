@@ -1,0 +1,15 @@
+bin/lzma
+bin/unlzma
+bin/xz
+bin/unxz
+doc/xz/README
+doc/xz/ChangeLog
+doc/xz/THANKS
+doc/xz/faq.txt
+doc/xz/history.txt
+doc/xz/AUTHORS
+doc/xz/NEWS
+man/man1/xz.1
+man/man1/lzma.1
+man/man1/unxz.1
+man/man1/unlzma.1

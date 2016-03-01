@@ -1,0 +1,9 @@
+doc/libarchive
+man/man1/bsdcpio.1
+man/man1/bsdtar.1
+man/man1/cpio.1
+man/man1/tar.1
+bin/bsdtar
+bin/bsdcpio
+bin/tar
+bin/cpio

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# this file is part of packlim-recipes.
+#
+# Copyright (c) 2016 Dima Krasner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+PKG_VER=1.1.14
+PKG_SRCS=http://www.musl-libc.org/releases/musl-$PKG_VER.tar.gz
+PKG_DESC="A C library"
+PKG_DEPS="linux-libre-headers iana-etc"
+
+build() {
+	# build separately, musl-clang with $DESTDIR as the prefix
+	./configure --prefix=$DESTDIR/$PFIX \
+	            --libdir=$DESTDIR/$PFIX/lib \
+	            --includedir=$DESTDIR/$PFIX/include \
+	            --enable-wrapper=clang
+	[ $? -ne 0 ] && return 1
+
+	$MAKE obj/musl-clang obj/ld.musl-clang
+	[ $? -ne 0 ] && return 1
+
+	mkdir host-tools
+	mv obj/musl-clang host-tools/
+	mv obj/ld.musl-clang host-tools/
+
+	./configure --prefix=/$PFIX \
+	            --includedir=/$PFIX/include \
+	            --enable-optimize= \
+	            --disable-wrapper \
+	            --disable-shared
+	[ $? -ne 0 ] && return 1
+
+	$MAKE
+}
+
+package() {
+	$MAKE install
+
+	install -D -m 755 host-tools/musl-clang $DESTDIR/$PFIX/bin/musl-clang
+	install -m 755 host-tools/ld.musl-clang $DESTDIR/$PFIX/bin/ld.musl-clang
+
+	install -D -m 644 README $DESTDIR/$PFIX/doc/musl/README
+	install -m 644 WHATSNEW $DESTDIR/$PFIX/doc/musl/WHATSNEW
+	install -m 644 COPYRIGHT $DESTDIR/$PFIX/doc/musl/COPYRIGHT
+}

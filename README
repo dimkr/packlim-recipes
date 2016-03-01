@@ -1,0 +1,34 @@
+                  _    _ _                               _
+ _ __   __ _  ___| | _| (_)_ __ ___        _ __ ___  ___(_)_ __   ___  ___
+| '_ \ / _` |/ __| |/ / | | '_ ` _ \ _____| '__/ _ \/ __| | '_ \ / _ \/ __|
+| |_) | (_| | (__|   <| | | | | | | |_____| | |  __/ (__| | |_) |  __/\__ \
+| .__/ \__,_|\___|_|\_\_|_|_| |_| |_|     |_|  \___|\___|_| .__/ \___||___/
+|_|                                                       |_|
+
+Overview
+========
+
+packlim-recipes is a build system for packlim (https://github.com/dimkr/packlim)
+packages.
+
+Packages produced by it are static and installed at the /opt/packlim prefix, so
+they can be used on a wide range of Linux (https://www.kernel.org/)
+distributions.
+
+Usage
+========
+
+  # ./build.sh $package
+
+e.g.:
+
+  # ./build.sh packlim
+
+Credits and Legal Information
+=============================
+
+packlim-recipes is free and unencumbered software released under the terms of
+the MIT license; see COPYING for the license text. For a list of its authors and
+contributors, see AUTHORS.
+
+The ASCII art logo at the top was made using FIGlet (http://www.figlet.org/).
