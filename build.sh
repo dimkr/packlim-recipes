@@ -81,17 +81,17 @@ download() {
 			case $i in
 				*.git)
 					git clone --recursive --depth 1 $i $1-git$TODAY
-					tar -c $1-git$TODAY | gzip -9 > $dest
+					tar -f - -c $1-git$TODAY | gzip -9 > $dest
 					;;
 
 				svn://*)
 					svn co $i $1-svn$TODAY
-					tar -c $1-svn$TODAY | gzip -9 > $dest
+					tar -f - -c $1-svn$TODAY | gzip -9 > $dest
 					;;
 
 				*/hg)
 					hg clone $i $1-hg$TODAY
-					tar -c $1-hg$TODAY | gzip -9 > $dest
+					tar -f - -c $1-hg$TODAY | gzip -9 > $dest
 					;;
 
 				http://*|https://*|ftp://*)
@@ -109,8 +109,8 @@ list_deps() {
 
 	for i in $@
 	do
-		PKG_DEPS=""
-		. ./rules/$i
+		PKG_DEPS=
+		. ./rule/$i
 		list_deps $PKG_DEPS
 		echo $i
 	done
@@ -119,7 +119,7 @@ list_deps() {
 list_uniq_deps() {
 	local i j
 
-	uniq=""
+	uniq=
 	for i in $(list_deps $1)
 	do
 		dup=0
@@ -156,7 +156,7 @@ do
 		cd $WRKDIR/$i
 
 		unset -f build
-		. $HERE/rules/$i
+		. $HERE/rule/$i
 		download $i
 
 		for j in $(ls *.tar* 2>/dev/null)
@@ -200,7 +200,7 @@ do
 
 		set -e
 
-		for name in $i $i.common
+		for name in $i $i-common
 		do
 			[ ! -f $HERE/template/$name ] && continue
 
@@ -215,7 +215,34 @@ do
 			then
 				strip -s -R .note -R .comment $HERE/output/$name/$PFIX/bin/* 2>/dev/null
 			fi
+
+			tar -f - -c -C $HERE/output/$name . |
+			lzip -9 |
+			packlim package > $HERE/repo/$name.pkg
 		done
+
+		deps=
+		for dep in $PKG_DEPS
+		do
+			[ -n "$deps" ] && deps="$deps "
+			if [ -f $HERE/repo/$dep-common.pkg ]
+			then
+				deps="$deps$dep-common"
+			else
+				deps="$deps$dep"
+			fi
+		done
+
+		if [ -f $HERE/repo/$i-common.pkg ]
+		then
+			echo "$i-common|$PKG_VER|$PKG_DESC|$i-common.pkg|$deps" >> $HERE/repo/available
+			deps="$i-common"
+		fi
+
+		if [ -f $HERE/repo/$i.pkg ]
+		then
+			echo "$i|$PKG_VER|$PKG_DESC|$i.pkg|$deps" >> $HERE/repo/available
+		fi
 
 		set +e
 	fi
