@@ -138,6 +138,17 @@ list_uniq_deps() {
 	echo "$uniq"
 }
 
+update_pkg_list() {
+	tmp=$(mktemp -u)
+
+	(
+		grep -v ^$1\| $HERE/repo/available 2>/dev/null
+		echo "$1|$2|$3|$1.pkg|$4"
+	) | tee $tmp | packlim sign > $HERE/repo/available.sig
+
+	mv -f $tmp $HERE/repo/available
+}
+
 cleanup() {
 	rm -rf $WRKDIR
 }
@@ -156,6 +167,7 @@ do
 		cd $WRKDIR/$i
 
 		unset -f build
+		PKG_VER=$TODAY
 		. $HERE/rule/$i
 		download $i
 
@@ -235,14 +247,11 @@ do
 
 		if [ -f $HERE/repo/$i-common.pkg ]
 		then
-			echo "$i-common|$PKG_VER|$PKG_DESC|$i-common.pkg|$deps" >> $HERE/repo/available
+			update_pkg_list $i-common $PKG_VER "$PKG_DESC" "$deps"
 			deps="$i-common"
 		fi
 
-		if [ -f $HERE/repo/$i.pkg ]
-		then
-			echo "$i|$PKG_VER|$PKG_DESC|$i.pkg|$deps" >> $HERE/repo/available
-		fi
+		[ -f $HERE/repo/$i.pkg ] && update_pkg_list $i $PKG_VER "$PKG_DESC" "$deps"
 
 		set +e
 	fi
@@ -259,3 +268,5 @@ do
 
 	[ -f $HERE/post-build/$i ] && . $HERE/post-build/$i
 done
+
+exit 0
