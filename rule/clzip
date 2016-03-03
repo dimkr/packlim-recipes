@@ -22,18 +22,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-PKG_VER=3.1.2
-PKG_SRCS=http://www.libarchive.org/downloads/libarchive-$PKG_VER.tar.gz
-PKG_DESC="An archive handling library"
-PKG_DEPS="musl zlib xz clzip"
+PKG_VER=1.7
+PKG_SRCS=http://download.savannah.gnu.org/releases/lzip/clzip/clzip-$PKG_VER.tar.gz
+PKG_DESC="A compression tool"
+PKG_DEPS=musl
 
 build() {
 	./configure --prefix=/$PFIX \
+	            --datarootdir=/$PFIX/share \
 	            --mandir=/$PFIX/man \
-	            --enable-static \
-	            --disable-shared \
-	            --without-openssl \
-	            --without-xml2
+	            CC=$CC \
+	            CFLAGS="$CFLAGS" \
+	            LDFLAGS="$LDFLAGS"
 	[ $? -ne 0 ] && return 1
 
 	$MAKE
@@ -43,12 +43,12 @@ package() {
 	local i
 
 	$MAKE install
-	for i in tar cpio
+	install -D -m 644 README $DESTDIR/$PFIX/doc/clzip/README
+	for i in NEWS ChangeLog AUTHORS COPYING
 	do
-		ln -s bsd$i $DESTDIR/$PFIX/bin/$i
-		ln -s bsd$i.1 $DESTDIR/$PFIX/man/man1/$i.1
+		install -m 644 $i $DESTDIR/$PFIX/doc/clzip/$i
 	done
-	install -D -m 644 README $DESTDIR/$PFIX/doc/libarchive/README
-	install -m 644 NEWS $DESTDIR/$PFIX/doc/libarchive/NEWS
-	install -m 644 COPYING $DESTDIR/$PFIX/doc/libarchive/COPYING
+
+	ln -s clzip $DESTDIR/$PFIX/bin/lzip
+	ln -s clzip.1 $DESTDIR/$PFIX/man/man1/lzip.1
 }

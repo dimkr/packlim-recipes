@@ -1,0 +1,5 @@
+doc/clzip
+man/man1/clzip.1
+man/man1/lzip.1
+bin/clzip
+bin/lzip
