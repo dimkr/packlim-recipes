@@ -1,0 +1,4 @@
+bin/ksh
+bin/sh
+doc/loksh
+man
