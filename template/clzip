@@ -1,5 +1,6 @@
-doc/clzip
+doc/clzip/ChangeLog
+doc/clzip/AUTHORS
+doc/clzip/README
+doc/clzip/NEWS
 man/man1/clzip.1
 man/man1/lzip.1
-bin/clzip
-bin/lzip
