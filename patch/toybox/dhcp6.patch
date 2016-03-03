@@ -1,0 +1,12 @@
+diff -rup toybox-0.7.0-orig/toys/pending/dhcp6.c toybox-0.7.0/toys/pending/dhcp6.c
+--- toybox-0.7.0-orig/toys/pending/dhcp6.c	2016-03-03 20:42:39.050001020 +0200
++++ toybox-0.7.0/toys/pending/dhcp6.c	2016-03-03 20:43:05.950001033 +0200
+@@ -380,7 +380,7 @@ static void parse_ia_na(uint8_t *data, i
+             if(!getaddrinfo(TT.req_ip, NULL, NULL,&res)) {
+               dbg("Requesting IP: %s\n", TT.req_ip);
+               memcpy (&TT.input_socket6, res->ai_addr, res->ai_addrlen);
+-              memcpy(t+4, TT.input_socket6.sin6_addr.__in6_u.__u6_addr8, 16);
++              memcpy(t+4, TT.input_socket6.sin6_addr.__in6_union.__s6_addr, 16);
+             } else xprintf("Invalid IP: %s\n",TT.req_ip);
+             freeaddrinfo(res);
+           }

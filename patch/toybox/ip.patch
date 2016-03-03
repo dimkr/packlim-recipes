@@ -1,0 +1,11 @@
+diff -rup toybox-0.7.0-orig/toys/pending/ip.c toybox-0.7.0/toys/pending/ip.c
+--- toybox-0.7.0-orig/toys/pending/ip.c	2016-03-03 20:48:25.670001185 +0200
++++ toybox-0.7.0/toys/pending/ip.c	2016-03-03 20:48:08.340001177 +0200
+@@ -31,6 +31,7 @@ config IP
+ #include <linux/rtnetlink.h>
+ #include <linux/if_ether.h>
+ #include <linux/if_addr.h>
++#include <linux/sockios.h>
+ #include <net/if_arp.h>
+ #include <ifaddrs.h>
+ #include <fnmatch.h>
