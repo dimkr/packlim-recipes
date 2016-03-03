@@ -1,0 +1,172 @@
+#!/bin/sh
+
+# this file is part of packlim-recipes.
+#
+# Copyright (c) 2016 Dima Krasner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+PKG_VER=6.0
+PKG_SRCS=http://ftp.gnu.org/pub/gnu/ncurses/ncurses-$PKG_VER.tar.gz
+PKG_DESC="A terminal handling library"
+PKG_DEPS=musl
+
+build() {
+	./configure --prefix=/$PFIX \
+	            --datadir=/$PFIX/share \
+	            --includedir=/$PFIX/include \
+	            --mandir=/$PFIX/man \
+	            --without-cxx \
+	            --without-cxx-binding \
+	            --without-ada \
+	            --without-progs \
+	            --without-tests \
+	            --with-pkg-config-libdir=/$PFIX/lib/pkgconfig \
+	            --enable-pc-files \
+	            --without-libtool \
+	            --without-shared \
+	            --with-normal \
+	            --without-debug \
+	            --without-profile \
+	            --without-dlsym \
+	            --enable-overwrite \
+	            --enable-widec \
+	            --enable-ext-colors \
+	            --with-manpage-format=normal
+	[ $? -ne 0 ] && return 1
+
+	$MAKE
+}
+
+package() {
+	local i
+
+	$MAKE install
+	mv $DESTDIR/usr/lib/pkgconfig $DESTDIR/$PFIX/lib/
+	rmdir $DESTDIR/$PFIX/usr/lib
+
+	for i in ncurses form panel menu
+	do
+		ln -s lib${i}w.a $DESTDIR/$PFIX/lib/lib$i.a
+		ln -s ${i}w.pc $DESTDIR/$PFIX/lib/pkgconfig/$i.pc
+
+		# workaround for ncurses detection in htop
+		ln -s lib${i}w.a $DESTDIR/$PFIX/lib/lib${i}6.a
+	done
+
+	# trim the terminfo directory
+	rm -rf $DESTDIR/$PFIX/share/terminfo/1 \
+	       $DESTDIR/$PFIX/share/terminfo/2 \
+	       $DESTDIR/$PFIX/share/terminfo/3 \
+	       $DESTDIR/$PFIX/share/terminfo/4 \
+	       $DESTDIR/$PFIX/share/terminfo/5 \
+	       $DESTDIR/$PFIX/share/terminfo/6 \
+	       $DESTDIR/$PFIX/share/terminfo/7 \
+	       $DESTDIR/$PFIX/share/terminfo/8 \
+	       $DESTDIR/$PFIX/share/terminfo/9 \
+	       $DESTDIR/$PFIX/share/terminfo/A \
+	       $DESTDIR/$PFIX/share/terminfo/E \
+	       $DESTDIR/$PFIX/share/terminfo/L \
+	       $DESTDIR/$PFIX/share/terminfo/M \
+	       $DESTDIR/$PFIX/share/terminfo/N \
+	       $DESTDIR/$PFIX/share/terminfo/P \
+	       $DESTDIR/$PFIX/share/terminfo/Q \
+	       $DESTDIR/$PFIX/share/terminfo/X \
+	       $DESTDIR/$PFIX/share/terminfo/a \
+	       $DESTDIR/$PFIX/share/terminfo/b \
+	       $DESTDIR/$PFIX/share/terminfo/c \
+	       $DESTDIR/$PFIX/share/terminfo/d \
+	       $DESTDIR/$PFIX/share/terminfo/e \
+	       $DESTDIR/$PFIX/share/terminfo/f \
+	       $DESTDIR/$PFIX/share/terminfo/g \
+	       $DESTDIR/$PFIX/share/terminfo/h \
+	       $DESTDIR/$PFIX/share/terminfo/i \
+	       $DESTDIR/$PFIX/share/terminfo/j \
+	       $DESTDIR/$PFIX/share/terminfo/k \
+	       $DESTDIR/$PFIX/share/terminfo/e \
+	       $DESTDIR/$PFIX/share/terminfo/m \
+	       $DESTDIR/$PFIX/share/terminfo/n \
+	       $DESTDIR/$PFIX/share/terminfo/o \
+	       $DESTDIR/$PFIX/share/terminfo/p \
+	       $DESTDIR/$PFIX/share/terminfo/q \
+	       $DESTDIR/$PFIX/share/terminfo/t \
+	       $DESTDIR/$PFIX/share/terminfo/u \
+	       $DESTDIR/$PFIX/share/terminfo/w \
+	       $DESTDIR/$PFIX/share/terminfo/z
+	for i in $DESTDIR/$PFIX/share/terminfo/s/*
+	do
+		case $i in
+			*screen*)
+				;;
+			*)
+				rm -f $i
+				;;
+		esac
+	done
+
+	for i in $DESTDIR/$PFIX/share/terminfo/r/*
+	do
+		case $i in
+			*rxvt*)
+				;;
+			*)
+				rm -f $i
+				;;
+		esac
+	done
+
+	for i in $DESTDIR/$PFIX/share/terminfo/v/*
+	do
+		case $i in
+			*vt[0-9]*)
+				;;
+			*)
+				rm -f $i
+				;;
+		esac
+	done
+
+	for i in $DESTDIR/$PFIX/share/terminfo/l/*
+	do
+		case $i in
+			*linux*)
+				;;
+			*)
+				rm -f $i
+				;;
+		esac
+	done
+
+	for i in $DESTDIR/$PFIX/share/terminfo/x/*
+	do
+		case $i in
+			*xterm*)
+				;;
+			*)
+				rm -f $i
+				;;
+		esac
+	done
+
+	install -D -m 644 README $DESTDIR/$PFIX/doc/ncurses/README
+	for i in NEWS ANNOUNCE COPYING AUTHORS
+	do
+		install -m 644 $i $DESTDIR/$PFIX/doc/ncurses/$i
+	done
+}
