@@ -1,0 +1,7 @@
+doc/lbzip2
+man/man1/lbunzip2.1
+man/man1/lbzip2.1
+bin/lbzip2
+bin/bzip2
+bin/bunzip2
+bin/lbunzip2
