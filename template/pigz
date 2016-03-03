@@ -1,0 +1,7 @@
+bin/pigz
+bin/unpigz
+bin/gzip
+bin/gunzip
+doc/pigz
+man/man1/pigz.1
+man/man1/unpigz.1
