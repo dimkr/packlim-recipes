@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# this file is part of packlim-recipes.
+#
+# Copyright (c) 2016 Dima Krasner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+PKG_VER=4.3.1
+PKG_SRCS=http://ftp.gnu.org/gnu/screen/screen-$PKG_VER.tar.gz
+PKG_DESC="A terminal multiplexer"
+PKG_DEPS="musl ncurses"
+
+build() {
+	./configure --prefix=/$PFIX \
+	            --datadir=/$PFIX/share \
+	            --mandir=/$PFIX/man \
+	            --disable-socket-dir \
+	            --disable-pam \
+	            --disable-use-locale \
+	            --disable-telnet \
+	            --disable-colors256 \
+	            --disable-rxvt_osc \
+	            --with-sys-screenrc=/$PFIX/etc/screenrc
+	[ $? -ne 0 ] && return 1
+
+	$MAKE
+}
+
+package() {
+	local i
+
+	$MAKE DESTDIR=$DESTDIR install
+	rm -f $DESTDIR/$PFIX/bin/screen
+	mv $DESTDIR/$PFIX/bin/screen-$PKG_VER $DESTDIR/$PFIX/bin/screen
+	install -D -m 644 etc/etcscreenrc $DESTDIR/$PFIX/etc/screenrc
+	install -D -m 644 README $DESTDIR/$PFIX/doc/screen/README
+	for i in NEWS ChangeLog COPYING
+	do
+		install -m 644 $i $DESTDIR/$PFIX/doc/screen/$i
+	done
+}

@@ -1,0 +1,5 @@
+bin/screen
+doc/screen
+share/screen
+man/man1/screen.1
+etc/screenrc
