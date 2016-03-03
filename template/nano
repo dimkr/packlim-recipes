@@ -1,0 +1,6 @@
+bin/nano
+bin/rnano
+share/nano
+doc/nano
+man/man1/nano.1
+man/man1/rnano.1
