@@ -49,7 +49,7 @@ export CFLAGS="$CFLAGS \
                -fdata-sections \
                -fmerge-all-constants \
                -pipe"
-export LDFLAGS=
+export LDFLAGS="-Wl,-gc-sections -Wl,--sort-common"
 
 download() {
 	local i
@@ -74,33 +74,31 @@ download() {
 				;;
 		esac
 
-		if [ -f $HERE/src/$dest ]
+		if [ ! -f $HERE/src/$dest ]
 		then
-			cp $HERE/src/$dest .
-		else
 			case $i in
 				*.git)
 					git clone --recursive --depth 1 $i $1-git$TODAY
-					tar -f - -c $1-git$TODAY | gzip -9 > $dest
+					tar -f - -c $1-git$TODAY | gzip -9 > $HERE/src/$dest
 					;;
 
 				svn://*)
 					svn co $i $1-svn$TODAY
-					tar -f - -c $1-svn$TODAY | gzip -9 > $dest
+					tar -f - -c $1-svn$TODAY | gzip -9 > $HERE/src/$dest
 					;;
 
 				*/hg)
 					hg clone $i $1-hg$TODAY
-					tar -f - -c $1-hg$TODAY | gzip -9 > $dest
+					tar -f - -c $1-hg$TODAY | gzip -9 > $HERE/src/$dest
 					;;
 
 				http://*|https://*|ftp://*)
-					wget $i
+					wget -O $HERE/src/$dest $i
 					;;
 			esac
-
-			cp $dest $HERE/src/
 		fi
+
+		ln -s $HERE/src/$dest .
 	done
 }
 
