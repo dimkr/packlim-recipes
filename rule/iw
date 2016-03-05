@@ -37,7 +37,6 @@ build() {
 
 package() {
 	$MAKE SBINDIR=/$PFIX/bin MANDIR=/$PFIX/man install
-	gunzip $DESTDIR/$PFIX/man/man8/iw.8.gz
 	install -D -m 644 README $DESTDIR/$PFIX/doc/iw/README
 	install -m 644 COPYING $DESTDIR/$PFIX/doc/iw/COPYING
 }

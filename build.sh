@@ -158,6 +158,7 @@ pkgs=$(list_uniq_deps $1)
 for i in $pkgs
 do
 	export DESTDIR=$HERE/staging/$i
+	built=0
 
 	if [ ! -d $HERE/staging/$i ]
 	then
@@ -207,6 +208,9 @@ do
 		then
 			rm -f $DESTDIR/$PFIX/lib/lib*.la 2>/dev/null
 		fi
+
+		[ -f $HERE/post-build/$i ] && . $HERE/post-build/$i
+		built=1
 
 		set -e
 
@@ -264,7 +268,7 @@ do
 		export LDFLAGS="-L$DESTDIR/$PFIX/lib $LDFLAGS"
 	fi
 
-	[ -f $HERE/post-build/$i ] && . $HERE/post-build/$i
+	[ $built -eq 0 -a -f $HERE/post-build/$i ] && . $HERE/post-build/$i
 done
 
 exit 0
