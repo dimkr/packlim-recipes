@@ -1,0 +1,44 @@
+From 696c448f8a6fdf3d56733e69ca8d7ddd04c908de Mon Sep 17 00:00:00 2001
+From: Dima Krasner <dima@dimakrasner.com>
+Date: Sat, 5 Mar 2016 19:50:02 +0200
+Subject: [PATCH] include time.h, to prevent use of struct timespec before
+ definition
+
+In some old (2.6.32.x) kernel headers, asound.h does not include linux time.h
+when __KERNEL__ is undefined, which may break userspace.
+
+The build failures caused by this are similar to those fixed by c8333f8c.
+
+Signed-off-by: Dima Krasner <dima@dimakrasner.com>
+---
+ mixer.c | 1 +
+ pcm.c   | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/mixer.c b/mixer.c
+index 7c5c5dc..9dd6e68 100644
+--- a/mixer.c
++++ b/mixer.c
+@@ -34,6 +34,7 @@
+ #include <errno.h>
+ #include <ctype.h>
+ #include <limits.h>
++#include <time.h>
+ 
+ #include <sys/ioctl.h>
+ 
+diff --git a/pcm.c b/pcm.c
+index 2c1308d..20bb7f0 100644
+--- a/pcm.c
++++ b/pcm.c
+@@ -38,6 +38,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <sys/time.h>
++#include <time.h>
+ #include <limits.h>
+ 
+ #include <linux/ioctl.h>
+-- 
+2.1.4
+
