@@ -1,0 +1,13 @@
+bin/alsaconf
+bin/alsamixer
+bin/aplay
+bin/arecord
+bin/speaker-test
+doc/alsa-utils
+man/man8/alsaconf.8
+man/man1/alsamixer.1
+man/man1/aplay.1
+man/man1/arecord.1
+man/man1/speaker-test.1
+share/alsa
+share/sounds
