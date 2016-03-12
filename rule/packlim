@@ -27,7 +27,7 @@ PKG_DESC="A package manager"
 PKG_DEPS="musl libarchive curl"
 
 build() {
-	$MAKE CONF_DIR=/$PFIX/etc
+	$MAKE CONF_DIR=/$PFIX/etc VAR_DIR=/$PFIX/var
 }
 
 package() {
@@ -35,5 +35,6 @@ package() {
 	      DOC_DIR=/$PFIX/doc \
 	      MAN_DIR=/$PFIX/man \
 	      CONF_DIR=/$PFIX/etc \
+	      VAR_DIR=/$PFIX/var \
 	      install
 }
