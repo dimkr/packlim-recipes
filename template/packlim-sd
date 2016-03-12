@@ -1,0 +1,15 @@
+bin
+dev
+doc
+etc
+home
+lib
+man
+mnt
+opt
+proc
+run
+srv
+sys
+tmp
+var

@@ -23,7 +23,7 @@
 # THE SOFTWARE.
 
 MAKE="make -j$(grep ^processor /proc/cpuinfo | wc -l) V=1"
-HERE=$(pwd)
+export HERE=$(pwd)
 WRKDIR=$(mktemp -d)
 TODAY=$(date +%d%m%Y)
 
@@ -139,10 +139,10 @@ list_uniq_deps() {
 update_pkg_list() {
 	tmp=$(mktemp -u)
 
-	(
-		grep -v ^$1\| $HERE/repo/available 2>/dev/null
-		echo "$1|$2|$3|$1.pkg|$4"
-	) | tee $tmp | packlim sign > $HERE/repo/available.sig
+	[ -f $HERE/repo/available ] && grep -v ^$1\| $HERE/repo/available > $tmp
+	echo "$1|$2|$3|$1.pkg|$4" >> $tmp
+
+	packlim sign < $tmp > $HERE/repo/available.sig
 
 	mv -f $tmp $HERE/repo/available
 }
@@ -224,6 +224,8 @@ do
 				mkdir -p $HERE/output/$name/$PFIX/$dest
 				cp -a -P -v $DESTDIR/$PFIX/$path $HERE/output/$name/$PFIX/$dest/
 			done < $HERE/template/$name
+
+			find $HERE/output -name .gitignore -delete
 
 			if [ -d $HERE/output/$name/$PFIX/bin ]
 			then
